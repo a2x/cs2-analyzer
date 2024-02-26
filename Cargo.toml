@@ -1,0 +1,48 @@
+[package]
+name = "cs2-analyzer"
+version = "0.1.0"
+authors = ["a2x", "ko1N <ko1N1337@gmail.com>"]
+edition = "2021"
+readme = "README.md"
+repository = "https://github.com/a2x/cs2-analyzer"
+license = "MIT"
+
+[dependencies]
+log = "0.4"
+pelite = "0.10"
+phf = { version = "0.11", features = ["macros"] }
+rayon = "1.8"
+serde = { version = "1.0", features = ["derive"], optional = true }
+thiserror = "1.0"
+
+[dev-dependencies]
+walkdir = "2.4"
+winreg = "0.52"
+
+[features]
+default = []
+serde_support = ["serde"]
+
+[profile.release]
+lto = true
+strip = true
+
+[[example]]
+name = "buttons"
+path = "examples/buttons.rs"
+
+[[example]]
+name = "concommands"
+path = "examples/concommands.rs"
+
+[[example]]
+name = "convars"
+path = "examples/convars.rs"
+
+[[example]]
+name = "interfaces"
+path = "examples/interfaces.rs"
+
+[[example]]
+name = "offsets"
+path = "examples/offsets.rs"
