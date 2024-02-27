@@ -1,9 +1,9 @@
-use cs2_analyzer::{Analyzer, ParserOptions, Result};
+use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 
 fn main() -> Result<()> {
     let install_path = find_cs2_install_path()?;
 
-    let mut analyzer = Analyzer::new_with_opts(ParserOptions {
+    let mut analyzer = Analyzer::new_with_opts(AnalyzerOptions {
         buttons: true,
         concommands: false,
         convars: false,

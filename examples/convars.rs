@@ -1,4 +1,4 @@
-use cs2_analyzer::{Analyzer, ParserOptions, Result};
+use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 
 use walkdir::WalkDir;
 
@@ -12,7 +12,7 @@ fn main() -> Result<()> {
         .map(|e| e.path().to_path_buf())
         .collect();
 
-    let mut analyzer = Analyzer::new_with_opts(ParserOptions {
+    let mut analyzer = Analyzer::new_with_opts(AnalyzerOptions {
         buttons: false,
         concommands: false,
         convars: true,

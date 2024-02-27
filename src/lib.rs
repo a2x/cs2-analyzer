@@ -1,4 +1,4 @@
-pub use analysis::{AnalysisResult, ParserOptions};
+pub use analysis::{AnalysisResult, AnalyzerOptions};
 pub use error::{Error, Result};
 
 use std::collections::HashMap;
@@ -17,7 +17,7 @@ mod sdk;
 #[derive(Clone, Debug)]
 pub struct Analyzer {
     files: HashMap<String, Vec<u8>>,
-    options: ParserOptions,
+    options: AnalyzerOptions,
 }
 
 impl Analyzer {
@@ -25,12 +25,12 @@ impl Analyzer {
     pub fn new() -> Self {
         Self {
             files: HashMap::new(),
-            options: ParserOptions::default(),
+            options: AnalyzerOptions::default(),
         }
     }
 
     /// Creates a new [`Analyzer`] instance with the specified options.
-    pub fn new_with_opts(options: ParserOptions) -> Self {
+    pub fn new_with_opts(options: AnalyzerOptions) -> Self {
         Self {
             files: HashMap::new(),
             options,

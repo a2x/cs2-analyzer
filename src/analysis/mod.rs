@@ -34,7 +34,7 @@ pub struct AnalysisResult<'a> {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct ParserOptions {
+pub struct AnalyzerOptions {
     /// Whether to parse buttons.
     pub buttons: bool,
 
@@ -54,7 +54,7 @@ pub struct ParserOptions {
     pub schemas: bool,
 }
 
-impl Default for ParserOptions {
+impl Default for AnalyzerOptions {
     fn default() -> Self {
         Self {
             buttons: true,
@@ -68,10 +68,13 @@ impl Default for ParserOptions {
 }
 
 pub fn analyze(file: PeFile<'_>) -> Result<AnalysisResult<'_>> {
-    analyze_with_opts(file, &ParserOptions::default())
+    analyze_with_opts(file, &AnalyzerOptions::default())
 }
 
-pub fn analyze_with_opts<'a>(file: PeFile<'a>, opts: &ParserOptions) -> Result<AnalysisResult<'a>> {
+pub fn analyze_with_opts<'a>(
+    file: PeFile<'a>,
+    opts: &AnalyzerOptions,
+) -> Result<AnalysisResult<'a>> {
     let module_name = read_module_name(file)?;
 
     let mut result = AnalysisResult::default();
