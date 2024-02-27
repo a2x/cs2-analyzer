@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
 
-/// Represents all the flags a console variable can have.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 #[repr(u32)]
@@ -33,62 +32,47 @@ pub enum ConVarFlags {
     VConsoleSetFocus = 0x8000000,
 }
 
-/// Represents a console variable.
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct ConVar<'a> {
-    /// The name of the convar.
     pub name: &'a str,
-
-    /// The description of the convar, if any.
     pub description: Option<&'a str>,
-
-    /// The flags of the convar.
     pub flags: ConVarFlags,
-
-    /// The RVA of the convar pointer.
     pub value: Rva,
 }
 
 impl<'a> ConVar<'a> {
-    /// Returns `true` if the convar contains the given flag.
     #[inline]
     pub fn contains(&self, flag: ConVarFlags) -> bool {
         (self.flags as u32) & (flag as u32) != 0
     }
 
-    /// Returns `true` if the convar is cheat protected.
     #[inline]
     pub fn is_cheat(&self) -> bool {
         self.contains(ConVarFlags::Cheat)
     }
 
-    /// Returns `true` if the convar is development only.
     #[inline]
     pub fn is_dev_only(&self) -> bool {
         self.contains(ConVarFlags::DevelopmentOnly)
     }
 
-    /// Returns `true` if the convar is hidden.
     #[inline]
     pub fn is_hidden(&self) -> bool {
         self.contains(ConVarFlags::Hidden)
     }
 
-    /// Returns `true` if the convar is protected.
     #[inline]
     pub fn is_protected(&self) -> bool {
         self.contains(ConVarFlags::Protected)
     }
 
-    /// Returns `true` if the convar is replicated.
     #[inline]
     pub fn is_replicated(&self) -> bool {
         self.contains(ConVarFlags::Replicated)
     }
 }
 
-/// Scans the given PE file for console variables.
 pub fn convars(file: PeFile<'_>) -> Vec<ConVar<'_>> {
     // XREF: "RegisterConVar: Unknown error registering convar \"%s\"!\n"
     let mut matches = file.scanner().matches_code(pattern!(

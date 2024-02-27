@@ -22,36 +22,20 @@ pub mod interfaces;
 pub mod matchmaking;
 pub mod schemas;
 
-/// Represents the result of an analysis.
 #[derive(Clone, Debug, Default)]
 pub struct AnalysisResult<'a> {
-    /// A list of buttons found during the analysis.
     pub buttons: Vec<Button<'a>>,
-
-    /// A list of concommands found during the analysis.
     pub concommands: Vec<ConCommand<'a>>,
-
-    /// A list of convars found during the analysis.
     pub convars: Vec<ConVar<'a>>,
-
-    /// A list of interfaces found during the analysis.
     pub interfaces: Vec<Interface<'a>>,
-
-    /// A map of offsets found during the analysis, with the offset name as the key and the
-    /// relative virtual address (RVA) as the value.
     pub offsets: BTreeMap<&'a str, Rva>,
-
-    /// A list of classes found during the analysis.
     pub classes: Vec<Class<'a>>,
-
-    /// A list of enums found during the analysis.
     pub enums: Vec<Enum<'a>>,
 }
 
-/// Represents the options for the parser.
 #[derive(Clone, Copy, Debug)]
 pub struct ParserOptions {
-    /// Whether to parse key buttons.
+    /// Whether to parse buttons.
     pub buttons: bool,
 
     /// Whether to parse concommands.
@@ -71,7 +55,6 @@ pub struct ParserOptions {
 }
 
 impl Default for ParserOptions {
-    /// Set all parsing options to true by default.
     fn default() -> Self {
         Self {
             buttons: true,
@@ -84,12 +67,10 @@ impl Default for ParserOptions {
     }
 }
 
-/// Analyzes the given PE file with the default parser options.
 pub fn analyze(file: PeFile<'_>) -> Result<AnalysisResult<'_>> {
     analyze_with_opts(file, &ParserOptions::default())
 }
 
-/// Analyzes the given PE file with the given parser options.
 pub fn analyze_with_opts<'a>(file: PeFile<'a>, opts: &ParserOptions) -> Result<AnalysisResult<'a>> {
     let module_name = read_module_name(file)?;
 
@@ -134,7 +115,6 @@ pub fn analyze_with_opts<'a>(file: PeFile<'a>, opts: &ParserOptions) -> Result<A
     Ok(result)
 }
 
-/// Reads the module name from the PE file.
 fn read_module_name(file: PeFile<'_>) -> Result<&str> {
     let mut save = [0; 2];
 

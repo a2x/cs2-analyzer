@@ -17,7 +17,6 @@ static PATTERNS: phf::Map<&'static str, &'static [Atom]> = phf_map! {
     "dwWindowWidth" => pattern!("8b05${'} 8907"),
 };
 
-/// Scans the PE file for offsets from the given patterns.
 pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
     let mut map = BTreeMap::new();
 

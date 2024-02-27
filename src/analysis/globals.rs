@@ -4,19 +4,15 @@ use rayon::prelude::*;
 
 use crate::error::Result;
 
+// Common instances that aren't very interesting.
 const BLACKLIST: [&'static str; 2] = [".?AVexception@std@@", ".?AVtype_info@@"];
 
-/// Represents a global vtable instance.
 #[derive(Clone, Copy, Debug)]
 pub struct Global<'a> {
-    /// The mangled RTTI type name.
     pub type_name: &'a str,
-
-    /// The RVA of the vtable instance.
     pub instance: Rva,
 }
 
-/// Scans the PE file for global vtable instances.
 pub fn globals(file: PeFile<'_>) -> Vec<Global<'_>> {
     let image = file.image();
 

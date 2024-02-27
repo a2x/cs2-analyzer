@@ -23,7 +23,6 @@ static PATTERNS: phf::Map<&'static str, &'static [Atom]> = phf_map! {
     "dwViewRender" => pattern!("488905${'} 488bc8 4885c0"),
 };
 
-/// Scans the PE file for offsets from the given patterns.
 pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
     let mut map = BTreeMap::new();
 
@@ -37,7 +36,7 @@ pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
         if *name == "dwCSGOInput" {
             let instance = save[1];
 
-            let mut save = vec![0; 2];
+            let mut save = [0; 2];
 
             if file
                 .scanner()

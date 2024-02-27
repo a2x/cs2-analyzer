@@ -42,7 +42,7 @@ fn find_cs2_install_path() -> Result<String> {
 
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
 
-    let cs2 = hklm.open_subkey("SOFTWARE\\WOW6432Node\\Valve\\cs2")?;
+    let cs2 = hklm.open_subkey(r"SOFTWARE\WOW6432Node\Valve\cs2")?;
 
     let install_path: String = cs2.get_value("installpath")?;
 

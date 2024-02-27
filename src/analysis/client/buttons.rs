@@ -5,19 +5,12 @@ use pelite::pe64::{Pe, PeFile, Rva};
 
 use crate::error::Result;
 
-/// Represents a key button.
-///
-/// In the Source Engine, this is referred to as `kbutton_t`.
 #[derive(Clone, Copy, Debug)]
 pub struct Button<'a> {
-    /// The name of the key button.
     pub name: &'a str,
-
-    /// The RVA of the key button state.
     pub value: Rva,
 }
 
-/// Scans the PE file for all key buttons.
 pub fn buttons(file: PeFile<'_>) -> Vec<Button<'_>> {
     let mut matches = file.scanner().matches_code(pattern!(
         "4883ec28 4533c0 488d15${'} 488d0d${'} e8${48895c2408}"

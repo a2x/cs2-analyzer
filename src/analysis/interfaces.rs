@@ -8,20 +8,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
 
-/// Represents an interface exported by `CreateInterface`.
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct Interface<'a> {
-    /// The name of the interface, including the version number.
-    ///
-    /// E.g. `Source2Client002`.
     pub name: &'a str,
-
-    /// The RVA of the interface instance.
     pub value: Rva,
 }
 
-/// Scans the PE file for interfaces exported by `CreateInterface`.
 pub fn interfaces(file: PeFile<'_>) -> Vec<Interface<'_>> {
     // Ensure the PE file exports "CreateInterface".
     if file

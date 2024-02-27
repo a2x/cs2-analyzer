@@ -19,81 +19,52 @@ use crate::sdk::{
     SchemaClassFieldData, SchemaClassInfoData, SchemaEnumInfoData, SchemaEnumeratorInfoData,
 };
 
-/// Represents a schema class.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct Class<'a> {
-    /// The name of the class.
     pub name: &'a str,
-
-    /// The parent class, if any.
     pub parent: Option<Box<Class<'a>>>,
-
-    /// The fields of the class.
     pub fields: Vec<ClassField<'a>>,
 }
 
-/// Represents a field of a schema class.
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct ClassField<'a> {
-    /// The name of the field.
     pub name: &'a str,
-
-    /// The offset of the field.
     pub offset: u32,
 }
 
-/// Represents a schema enum.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct Enum<'a> {
-    /// The name of the enum.
     pub name: &'a str,
-
-    /// The type name of the enum.
     pub type_name: &'a str,
-
-    /// The alignment of the enum.
     pub alignment: u8,
-
-    /// The number of members in the enum.
     pub size: u16,
-
-    /// The members of the enum.
     pub members: Vec<EnumMember<'a>>,
 }
 
 impl<'a> Enum<'a> {
-    /// Returns `true` if the enum is valid.
     #[inline]
     pub fn is_valid(&self) -> bool {
         self.size > 0 && self.alignment >= 1 && self.alignment <= 8
     }
 }
 
-/// Represents a member of a schema enum.
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct EnumMember<'a> {
-    /// The name of the member.
     pub name: &'a str,
-
-    /// The value of the member.
     pub value: i64,
 }
 
-/// Represents a schema registration.
 struct SchemaRegistration<'a> {
-    /// The mangled RTTI type name.
     #[allow(dead_code)]
     type_name: &'a str,
 
-    /// The RVA of the constructor.
     constructor: Rva,
 }
 
-/// Scans the given PE file for classes and enums exposed by the schema system.
 pub fn schemas(file: PeFile<'_>) -> (Vec<Class<'_>>, Vec<Enum<'_>>) {
     // Ensure the PE file exports "InstallSchemaBindings".
     if file
