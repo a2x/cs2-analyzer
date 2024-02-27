@@ -55,10 +55,10 @@ impl<'a> ConCommand<'a> {
 pub fn concommands(file: PeFile<'_>) -> Vec<ConCommand<'_>> {
     // XREF: "RegisterConCommand: Unknown error registering con command \"%s\"!\n"
     let mut matches = file.scanner().matches_code(pattern!(
-        "4c8d0d${'} [5-40] 488d15${'} (488d0d${} | 88442438 488d0d${}) (48c7442420u4 | [5-60] 48c7442420u4) [6-40] e8${48895c2408}"
+        "4c8d0d${'} [5-40] 488d15${'} (488d0d${} | 88442438 488d0d${}) (48c7442420u4 | [5-60] 48c7442420u4) [5-40] e8${48895c2408}"
     ));
 
-    let mut save = [0; 5];
+    let mut save = [0; 4];
 
     let mut list = Vec::new();
 
@@ -85,7 +85,7 @@ fn read<'a>(file: PeFile<'a>, save: &[Rva], list: &mut Vec<ConCommand<'a>>) -> R
     list.push(ConCommand {
         name,
         description,
-        flags: unsafe { mem::transmute(save[4]) },
+        flags: unsafe { mem::transmute(save[3]) },
     });
 
     Ok(())
