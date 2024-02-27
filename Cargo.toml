@@ -23,10 +23,6 @@ winreg = "0.52"
 default = []
 serde_support = ["serde"]
 
-[profile.release]
-lto = true
-strip = true
-
 [[example]]
 name = "buttons"
 path = "examples/buttons.rs"

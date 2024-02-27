@@ -39,7 +39,7 @@ impl Analyzer {
 
     /// Adds a file to the analyzer.
     #[cfg(target_arch = "wasm32")]
-    pub fn add_file<P: AsRef<Path>>(&mut self, path: P) -> Result<()> {
+    pub fn add_file<P: AsRef<Path>>(&mut self, _path: P) -> Result<()> {
         Err(Error::Other(
             "Analyzer::add_file is not supported in the WebAssembly target",
         ))
