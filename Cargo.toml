@@ -9,6 +9,8 @@ license = "MIT"
 
 [dependencies]
 log = "0.4"
+num_enum = "0.7"
+num_enum_derive = "0.7"
 pelite = "0.10"
 phf = { version = "0.11", features = ["macros"] }
 rayon = "1.8"
@@ -16,6 +18,7 @@ serde = { version = "1.0", features = ["derive"], optional = true }
 thiserror = "1.0"
 
 [dev-dependencies]
+simplelog = "0.12"
 walkdir = "2.4"
 winreg = "0.52"
 
@@ -42,3 +45,7 @@ path = "examples/interfaces.rs"
 [[example]]
 name = "offsets"
 path = "examples/offsets.rs"
+
+[[example]]
+name = "schemas"
+path = "examples/schemas.rs"

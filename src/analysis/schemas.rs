@@ -17,6 +17,7 @@ use crate::error::{Error, Result};
 
 use crate::sdk::{
     SchemaClassFieldData, SchemaClassInfoData, SchemaEnumInfoData, SchemaEnumeratorInfoData,
+    SchemaFieldType, SchemaMetadataEntryData,
 };
 
 #[derive(Clone, Debug)]
@@ -31,7 +32,15 @@ pub struct Class<'a> {
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct ClassField<'a> {
     pub name: &'a str,
+    pub r#type: SchemaFieldType,
     pub offset: u32,
+}
+
+#[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
+pub struct ClassMetadata<'a> {
+    pub name: &'a str,
+    pub function: Rva,
 }
 
 #[derive(Clone, Debug)]
@@ -155,6 +164,7 @@ fn read_class(file: PeFile<'_>, ptr: Ptr<SchemaClassInfoData>) -> Result<Class<'
     let name = file.deref_c_str(data.name)?.to_str()?;
 
     let fields = read_class_fields(file, &data)?;
+    let metadata = read_class_metadata(file, data.metadata)?;
 
     let parent = if !data.base_classes.is_null() {
         let base_class = file.deref(data.base_classes)?;
@@ -165,10 +175,11 @@ fn read_class(file: PeFile<'_>, ptr: Ptr<SchemaClassInfoData>) -> Result<Class<'
     };
 
     info!(
-        "found class: {} (parent: {:?}) (fields: {})",
+        "found class: {} (parent: {:?}) (fields: {}) (metadata: {:?})",
         name,
         parent.as_ref().map(|p| p.name),
-        fields.len()
+        fields.len(),
+        metadata
     );
 
     Ok(Class {
@@ -194,10 +205,26 @@ fn read_class_fields<'a>(
 
             Ok(ClassField {
                 name,
+                r#type: data.r#type(),
                 offset: data.offset,
             })
         })
         .collect()
+}
+
+fn read_class_metadata(
+    file: PeFile<'_>,
+    ptr: Ptr<SchemaMetadataEntryData>,
+) -> Result<ClassMetadata<'_>> {
+    let data = file.deref(ptr)?;
+    let name = file.deref_c_str(data.name)?.to_str()?;
+    let function_va = *file.deref(data.function)?;
+    let function_rva = file.va_to_rva(function_va)?;
+
+    Ok(ClassMetadata {
+        name,
+        function: function_rva,
+    })
 }
 
 fn read_enum(file: PeFile<'_>, ptr: Ptr<SchemaEnumInfoData>) -> Result<Enum<'_>> {

@@ -20,11 +20,11 @@ fn main() -> Result<()> {
 
     let mut analyzer = Analyzer::new_with_opts(AnalyzerOptions {
         buttons: false,
-        concommands: true,
+        concommands: false,
         convars: false,
         interfaces: false,
         offsets: false,
-        schemas: false,
+        schemas: true,
     });
 
     analyzer.add_files(&dll_paths);
@@ -33,8 +33,12 @@ fn main() -> Result<()> {
     let result = analyzer.analyze();
 
     for (file_name, result) in result {
-        for concommand in &result.concommands {
-            info!("[{}] {:#?}", file_name, concommand);
+        for class in result.classes {
+            info!("[{}] {:#?}", file_name, class);
+        }
+
+        for e in result.enums {
+            info!("[{}] {:#?}", file_name, e);
         }
     }
 

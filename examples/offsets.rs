@@ -1,6 +1,12 @@
 use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 
+use log::info;
+
+use simplelog::{Config, LevelFilter, SimpleLogger};
+
 fn main() -> Result<()> {
+    SimpleLogger::init(LevelFilter::Info, Config::default()).unwrap();
+
     let install_path = find_cs2_install_path()?;
 
     let dll_paths = &[
@@ -26,7 +32,7 @@ fn main() -> Result<()> {
 
     for (file_name, result) in result {
         for (name, value) in &result.offsets {
-            println!("[{}] {} @ {:#X}", file_name, name, value);
+            info!("[{}] {} @ {:#X}", file_name, name, value);
         }
     }
 

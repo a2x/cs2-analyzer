@@ -1,5 +1,3 @@
-use std::mem;
-
 use log::{info, warn};
 
 use pelite::pattern;
@@ -80,12 +78,14 @@ fn read<'a>(file: PeFile<'a>, save: &[Rva], list: &mut Vec<ConCommand<'a>>) -> R
     let description = Some(file.derva_c_str(save[1])?.to_str()?).filter(|s| !s.is_empty());
     let name = file.derva_c_str(save[2])?.to_str()?;
 
+    let flags = ConVarFlags::try_from(save[3]).unwrap_or(ConVarFlags::None);
+
     info!("found concommand: {}", name);
 
     list.push(ConCommand {
         name,
         description,
-        flags: unsafe { mem::transmute(save[3]) },
+        flags,
     });
 
     Ok(())

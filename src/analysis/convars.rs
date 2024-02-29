@@ -1,6 +1,6 @@
-use std::mem;
-
 use log::{info, warn};
+
+use num_enum::TryFromPrimitive;
 
 use pelite::pattern;
 use pelite::pe64::{Pe, PeFile, Rva};
@@ -10,12 +10,15 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
 
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, TryFromPrimitive)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 #[repr(u32)]
 pub enum ConVarFlags {
     None = 0x0,
+    Unregistered = 0x1,
     DevelopmentOnly = 0x2,
+    GameDll = 0x4,
+    ClientDll = 0x8,
     Hidden = 0x10,
     Protected = 0x20,
     SpOnly = 0x40,
@@ -101,12 +104,14 @@ fn read<'a>(file: PeFile<'a>, save: &[Rva], list: &mut Vec<ConVar<'a>>) -> Resul
     let description = file.derva_c_str(save[1])?.to_str().ok();
     let name = file.derva_c_str(save[3])?.to_str()?;
 
+    let flags = ConVarFlags::try_from(save[2]).unwrap_or(ConVarFlags::None);
+
     info!("found convar: {}", name);
 
     list.push(ConVar {
         name,
         description,
-        flags: unsafe { mem::transmute(save[2]) },
+        flags,
         value: save[4] + 0x8,
     });
 

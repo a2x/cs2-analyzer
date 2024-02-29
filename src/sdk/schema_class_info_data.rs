@@ -1,8 +1,8 @@
-use pelite::pe64::Ptr;
+use pelite::pe64::{Ptr, Va};
 use pelite::util::CStr;
 use pelite::Pod;
 
-use super::{SchemaBaseClassInfoData, SchemaClassFieldData};
+use super::{SchemaBaseClassInfoData, SchemaClassFieldData, SchemaMetadataEntryData};
 
 #[derive(Clone, Copy, Debug)]
 #[repr(C)]
@@ -19,7 +19,10 @@ pub struct SchemaClassInfoData {
     pub fields: Ptr<SchemaClassFieldData>,          // 0x0028
     pub pad_4: [u8; 0x8],                           // 0x0030
     pub base_classes: Ptr<SchemaBaseClassInfoData>, // 0x0038
-    pub pad_5: [u8; 0x30],                          // 0x0040
+    pub pad_5: [u8; 0x8],                           // 0x0040
+    pub metadata: Ptr<SchemaMetadataEntryData>,     // 0x0048
+    pub pad_6: [u8; 0x18],                          // 0x0050
+    pub function: Ptr<Va>,                          // 0x0068
 }
 
 unsafe impl Pod for SchemaClassInfoData {}
