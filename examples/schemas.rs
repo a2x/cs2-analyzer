@@ -32,12 +32,12 @@ fn main() -> Result<()> {
     // Analyze all the files (This may take a while).
     let result = analyzer.analyze();
 
-    for (file_name, result) in result {
-        for class in result.classes {
+    for (file_name, result) in &result {
+        for class in &result.classes {
             info!("[{}] {:#?}", file_name, class);
         }
 
-        for e in result.enums {
+        for e in &result.enums {
             info!("[{}] {:#?}", file_name, e);
         }
     }

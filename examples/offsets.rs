@@ -30,7 +30,7 @@ fn main() -> Result<()> {
     // Analyze all the files (This may take a while).
     let result = analyzer.analyze();
 
-    for (file_name, result) in result {
+    for (file_name, result) in &result {
         for (name, value) in &result.offsets {
             info!("[{}] {} @ {:#X}", file_name, name, value);
         }

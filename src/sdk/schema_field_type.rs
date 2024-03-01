@@ -37,3 +37,40 @@ pub enum SchemaFieldType {
     CUtlSymbol = 36,
     CUtlStringToken = 38,
 }
+
+impl SchemaFieldType {
+    #[inline]
+    pub fn type_name(&self) -> &'static str {
+        match self {
+            Self::Unknown => "unknown",
+            Self::Int8 => "int8_t",
+            Self::UInt8 => "uint8_t",
+            Self::Int16 => "int16_t",
+            Self::UInt16 => "uint16_t",
+            Self::Int32 => "int32_t",
+            Self::UInt32 => "uint32_t",
+            Self::Int64 => "int64_t",
+            Self::UInt64 => "uint64_t",
+            Self::Float32 => "float",
+            Self::Float64 => "double",
+            Self::Bool => "bool",
+            Self::Vector => "Vector",
+            Self::VectorAligned => "VectorAligned",
+            Self::Vector2D => "Vector2D",
+            Self::Vector4D => "Vector4D",
+            Self::QAngle => "QAngle",
+            Self::Quaternion => "Quaternion",
+            Self::QuaternionStorage => "QuaternionStorage",
+            Self::RadianEuler => "RadianEuler",
+            Self::DegreeEuler => "DegreeEuler",
+            Self::Matrix3x4 => "matrix3x4_t",
+            Self::Matrix3x4a => "matrix3x4a_t",
+            Self::CTransform => "CTransform",
+            Self::Color => "Color",
+            Self::CUtlBinaryBlock => "CUtlBinaryBlock",
+            Self::CUtlString => "CUtlString",
+            Self::CUtlSymbol => "CUtlSymbol",
+            Self::CUtlStringToken => "CUtlStringToken",
+        }
+    }
+}

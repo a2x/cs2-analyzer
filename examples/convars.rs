@@ -32,7 +32,7 @@ fn main() -> Result<()> {
     // Analyze all the files (This may take a while).
     let result = analyzer.analyze();
 
-    for (file_name, result) in result {
+    for (file_name, result) in &result {
         for convar in &result.convars {
             info!("[{}] {:#?}", file_name, convar);
         }
