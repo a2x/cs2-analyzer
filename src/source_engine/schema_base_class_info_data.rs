@@ -3,11 +3,11 @@ use pelite::Pod;
 
 use super::SchemaClassInfoData;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SchemaBaseClassInfoData {
-    pub offset: u32,                    // 0x0000
-    pub prev: Ptr<SchemaClassInfoData>, // 0x0004
+    pub offset: u32,
+    pub prev: Ptr<SchemaClassInfoData>,
 }
 
 unsafe impl Pod for SchemaBaseClassInfoData {}

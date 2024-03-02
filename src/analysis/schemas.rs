@@ -32,7 +32,7 @@ pub struct Class<'a> {
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct ClassField<'a> {
     pub name: &'a str,
-    pub r#type: SchemaFieldType,
+    pub schema_type: Option<SchemaFieldType>,
     pub offset: u32,
 }
 
@@ -48,7 +48,7 @@ pub struct ClassMetadata<'a> {
 pub struct Enum<'a> {
     pub name: &'a str,
     pub type_name: &'a str,
-    pub alignment: u8,
+    pub align_of: u8,
     pub size: u16,
     pub members: Vec<EnumMember<'a>>,
 }
@@ -56,7 +56,7 @@ pub struct Enum<'a> {
 impl<'a> Enum<'a> {
     #[inline]
     pub fn is_valid(&self) -> bool {
-        self.size > 0 && self.alignment >= 1 && self.alignment <= 8
+        self.size > 0 && self.align_of >= 1 && self.align_of <= 8
     }
 }
 
@@ -205,7 +205,7 @@ fn read_class_fields<'a>(
 
             Ok(ClassField {
                 name,
-                r#type: data.r#type(),
+                schema_type: data.schema_type(),
                 offset: data.offset,
             })
         })
@@ -236,7 +236,7 @@ fn read_enum(file: PeFile<'_>, ptr: Ptr<SchemaEnumInfoData>) -> Result<Enum<'_>>
     let e = Enum {
         name,
         type_name: data.type_name(),
-        alignment: data.alignment,
+        align_of: data.align_of,
         size: data.size,
         members,
     };
@@ -249,7 +249,7 @@ fn read_enum(file: PeFile<'_>, ptr: Ptr<SchemaEnumInfoData>) -> Result<Enum<'_>>
         "found enum: {} (type: {}) (alignment: {}) (size: {}) (members: {})",
         e.name,
         e.type_name,
-        e.alignment,
+        e.align_of,
         e.size,
         e.members.len()
     );
@@ -272,7 +272,7 @@ fn read_enum_members<'a>(
             let name = file.deref_c_str(data.name)?.to_str()?;
 
             let value = {
-                let value = unsafe { data.u.ulong } as i64;
+                let value = unsafe { data.union_data.ulong } as i64;
 
                 if value == i64::MAX {
                     -1

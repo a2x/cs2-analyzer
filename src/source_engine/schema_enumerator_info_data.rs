@@ -1,16 +1,14 @@
-use std::fmt;
-
 use pelite::pe64::Ptr;
 use pelite::util::CStr;
 use pelite::Pod;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SchemaEnumeratorInfoData {
-    pub name: Ptr<CStr>,                  // 0x0000
-    pub u: SchemaEnumeratorInfoDataUnion, // 0x0008
-    pub metadata_size: u32,               // 0x0010
-    pub pad_0: [u8; 0x8],                 // 0x0014
+    pub name: Ptr<CStr>,
+    pub union_data: SchemaEnumeratorInfoDataUnion,
+    pub metadata_size: u32,
+    pad_0020: [u8; 0x8],
 }
 
 unsafe impl Pod for SchemaEnumeratorInfoData {}
@@ -22,15 +20,4 @@ pub union SchemaEnumeratorInfoDataUnion {
     pub ushort: u16,
     pub uint: u32,
     pub ulong: u64,
-}
-
-impl fmt::Debug for SchemaEnumeratorInfoDataUnion {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("SchemaEnumeratorInfoDataUnion")
-            .field("uchar", unsafe { &self.uchar })
-            .field("ushort", unsafe { &self.ushort })
-            .field("uint", unsafe { &self.uint })
-            .field("ulong", unsafe { &self.ulong })
-            .finish()
-    }
 }

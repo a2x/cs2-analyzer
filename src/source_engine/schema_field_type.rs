@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 #[repr(u8)]
 pub enum SchemaFieldType {
-    Unknown = 0,
     Int8 = 6,
     UInt8 = 7,
     Int16 = 8,
@@ -42,7 +41,6 @@ impl SchemaFieldType {
     #[inline]
     pub fn type_name(&self) -> &'static str {
         match self {
-            Self::Unknown => "unknown",
             Self::Int8 => "int8_t",
             Self::UInt8 => "uint8_t",
             Self::Int16 => "int16_t",

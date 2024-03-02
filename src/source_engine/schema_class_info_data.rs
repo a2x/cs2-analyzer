@@ -4,25 +4,24 @@ use pelite::Pod;
 
 use super::{SchemaBaseClassInfoData, SchemaClassFieldData, SchemaMetadataEntryData};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SchemaClassInfoData {
-    pub pad_0: [u8; 0x8],                           // 0x0000
-    pub name: Ptr<CStr>,                            // 0x0008
-    pub pad_1: [u8; 0x8],                           // 0x0010
-    pub size: u32,                                  // 0x0018
-    pub num_fields: u16,                            // 0x001C
-    pub pad_2: [u8; 0x4],                           // 0x001E
-    pub alignment: u8,                              // 0x0022
-    pub num_base_classes: u8,                       // 0x0023
-    pub pad_3: [u8; 0x4],                           // 0x0024
-    pub fields: Ptr<SchemaClassFieldData>,          // 0x0028
-    pub pad_4: [u8; 0x8],                           // 0x0030
-    pub base_classes: Ptr<SchemaBaseClassInfoData>, // 0x0038
-    pub pad_5: [u8; 0x8],                           // 0x0040
-    pub metadata: Ptr<SchemaMetadataEntryData>,     // 0x0048
-    pub pad_6: [u8; 0x18],                          // 0x0050
-    pub function: Ptr<Va>,                          // 0x0068
+    pad_0000: [u8; 0x8],
+    pub name: Ptr<CStr>,
+    pad_0016: [u8; 0x8],
+    pub size: u32,
+    pub num_fields: u16,
+    pad_0030: [u8; 0x4],
+    pub align_of: u8,
+    pad_0036: [u8; 0x5],
+    pub fields: Ptr<SchemaClassFieldData>,
+    pad_0048: [u8; 0x8],
+    pub base_classes: Ptr<SchemaBaseClassInfoData>,
+    pad_0064: [u8; 0x8],
+    pub metadata: Ptr<SchemaMetadataEntryData>,
+    pad_0080: [u8; 0x18],
+    pub function: Ptr<Va>,
 }
 
 unsafe impl Pod for SchemaClassInfoData {}

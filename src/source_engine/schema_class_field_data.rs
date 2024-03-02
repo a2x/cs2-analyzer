@@ -4,20 +4,20 @@ use pelite::Pod;
 
 use super::SchemaFieldType;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SchemaClassFieldData {
-    pub name: Ptr<CStr>,  // 0x0000
-    pub r#type: u8,       // 0x0008
-    pub pad_0: [u8; 0x7], // 0x0009
-    pub offset: u32,      // 0x0010
-    pub pad_1: [u8; 0x8], // 0x0014
+    pub name: Ptr<CStr>,
+    pub schema_type: u8,
+    pad_0009: [u8; 0x7],
+    pub offset: u32,
+    pad_0020: [u8; 0x8],
 }
 
 impl SchemaClassFieldData {
     #[inline]
-    pub fn r#type(&self) -> SchemaFieldType {
-        SchemaFieldType::try_from(self.r#type).unwrap_or(SchemaFieldType::Unknown)
+    pub fn schema_type(&self) -> Option<SchemaFieldType> {
+        SchemaFieldType::try_from(self.schema_type).ok()
     }
 }
 
