@@ -12,7 +12,7 @@ use pelite::FileMap;
 pub mod analysis;
 pub mod error;
 
-mod sdk;
+mod source_engine;
 
 #[derive(Clone, Debug)]
 pub struct Analyzer {

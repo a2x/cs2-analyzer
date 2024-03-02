@@ -15,7 +15,7 @@ use super::globals;
 
 use crate::error::{Error, Result};
 
-use crate::sdk::{
+use crate::source_engine::{
     SchemaClassFieldData, SchemaClassInfoData, SchemaEnumInfoData, SchemaEnumeratorInfoData,
     SchemaFieldType, SchemaMetadataEntryData,
 };
