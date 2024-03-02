@@ -33,24 +33,26 @@ pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
             continue;
         }
 
-        if *name == "dwCSGOInput" {
-            let instance = save[1];
+        let rva = save[1];
 
-            let mut save = [0; 2];
+        match *name {
+            "dwCSGOInput" => {
+                let mut save = [0; 2];
 
-            if file
-                .scanner()
-                .finds_code(pattern!("498d81u4 4803c7"), &mut save)
-            {
-                map.insert("dwViewAngles", instance + save[1]);
+                if file
+                    .scanner()
+                    .finds_code(pattern!("498d81u4 4803c7"), &mut save)
+                {
+                    map.insert("dwViewAngles", rva + save[1]);
+                }
+            }
+            "dwPrediction" => {
+                map.insert("dwLocalPlayerPawn", rva + 0x138);
+            }
+            _ => {
+                map.insert(*name, rva);
             }
         }
-
-        if *name == "dwPrediction" {
-            map.insert("dwLocalPlayerPawn", save[1] + 0x138);
-        }
-
-        map.insert(*name, save[1]);
     }
 
     map

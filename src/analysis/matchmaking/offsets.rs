@@ -20,11 +20,16 @@ pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
             continue;
         }
 
-        if *name == "dwGameTypes" {
-            map.insert("dwGameTypes_mapName", save[1] + 0x120);
-        }
+        let rva = save[1];
 
-        map.insert(*name, save[1]);
+        match *name {
+            "dwGameTypes" => {
+                map.insert("dwGameTypes_mapName", rva + 0x120);
+            }
+            _ => {
+                map.insert(*name, rva);
+            }
+        }
     }
 
     map

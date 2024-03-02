@@ -27,17 +27,20 @@ pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
             continue;
         }
 
-        if *name == "dwNetworkGameClient_getLocalPlayer" {
-            // .text 48 83 C0 0A   add rax, 0Ah
-            // .text 48 8D 04 40   lea rax, [rax+rax*2]
-            // .text 45 8B 04 C7   mov r8d, [r15+rax*8]
+        let rva = save[1];
 
-            let index = (save[1] + (save[1] * 2)) * 8;
+        match *name {
+            "dwNetworkGameClient_getLocalPlayer" => {
+                // .text 48 83 C0 0A   add rax, 0Ah
+                // .text 48 8D 04 40   lea rax, [rax+rax*2]
+                // .text 45 8B 04 C7   mov r8d, [r15+rax*8]
 
-            save[1] = index;
+                map.insert("dwNetworkGameClient_getLocalPlayer", (rva + (rva * 2)) * 8);
+            }
+            _ => {
+                map.insert(*name, rva);
+            }
         }
-
-        map.insert(*name, save[1]);
     }
 
     map
