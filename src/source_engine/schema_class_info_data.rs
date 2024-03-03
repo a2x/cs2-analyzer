@@ -11,7 +11,7 @@ pub struct SchemaClassInfoData {
     pub name: Ptr<CStr>,
     pad_0016: [u8; 0x8],
     pub size: u32,
-    pub num_fields: u16,
+    pub fields_count: u16,
     pad_0030: [u8; 0x4],
     pub align_of: u8,
     pad_0036: [u8; 0x5],

@@ -14,11 +14,11 @@ pub struct SchemaClassFieldData {
     pad_0020: [u8; 0x8],
 }
 
+unsafe impl Pod for SchemaClassFieldData {}
+
 impl SchemaClassFieldData {
     #[inline]
     pub fn schema_type(&self) -> Option<SchemaFieldType> {
         SchemaFieldType::try_from(self.schema_type).ok()
     }
 }
-
-unsafe impl Pod for SchemaClassFieldData {}

@@ -2,13 +2,15 @@ use pelite::pe64::Ptr;
 use pelite::util::CStr;
 use pelite::Pod;
 
+use super::SchemaMetadataEntryData;
+
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SchemaEnumeratorInfoData {
     pub name: Ptr<CStr>,
     pub union_data: SchemaEnumeratorInfoDataUnion,
-    pub metadata_size: u32,
-    pad_0020: [u8; 0x8],
+    pub metadata_count: u32,
+    pub metadata: Ptr<SchemaMetadataEntryData>,
 }
 
 unsafe impl Pod for SchemaEnumeratorInfoData {}

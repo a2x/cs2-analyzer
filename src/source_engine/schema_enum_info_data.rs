@@ -13,14 +13,16 @@ pub struct SchemaEnumInfoData {
     pub align_of: u8,
     pad_0025: [u8; 0x3],
     pub size: u16,
-    pub static_metadata_size: u16,
+    pub static_metadata_count: u16,
     pub enum_info: Ptr<SchemaEnumeratorInfoData>,
     pad_0040: [u8; 0x1C],
 }
 
+unsafe impl Pod for SchemaEnumInfoData {}
+
 impl SchemaEnumInfoData {
     #[inline]
-    pub fn type_name(&self) -> &str {
+    pub fn type_name(&self) -> &'static str {
         match self.align_of {
             1 => "uint8_t",
             2 => "uint16_t",
@@ -30,5 +32,3 @@ impl SchemaEnumInfoData {
         }
     }
 }
-
-unsafe impl Pod for SchemaEnumInfoData {}

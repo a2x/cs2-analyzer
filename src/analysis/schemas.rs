@@ -193,7 +193,7 @@ fn read_class_fields<'a>(
     file: PeFile<'a>,
     data: &SchemaClassInfoData,
 ) -> Result<Vec<ClassField<'a>>> {
-    (0..data.num_fields)
+    (0..data.fields_count)
         .into_par_iter()
         .map(|i| {
             let ptr: Ptr<SchemaClassFieldData> = data
