@@ -13,7 +13,7 @@ pub struct Button<'a> {
 
 pub fn buttons(file: PeFile<'_>) -> Vec<Button<'_>> {
     let mut matches = file.scanner().matches_code(pattern!(
-        "4883ec28 4533c0 488d15${'} 488d0d${'} e8${48895c2408}"
+        "4883ec28 4533? (488d15${'} | 4c8d05${'}) (488d0d${'} | 48ba[8] 488d0d${'}) e8${(48895c2408 | 40534883ec20)}"
     ));
 
     let mut save = [0; 3];
