@@ -8,6 +8,7 @@ repository = "https://github.com/a2x/cs2-analyzer"
 license = "MIT"
 
 [dependencies]
+dataview = "1.0"
 log = "0.4"
 num_enum = "0.7"
 num_enum_derive = "0.7"

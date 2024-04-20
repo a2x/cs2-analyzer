@@ -16,7 +16,6 @@ pub struct Interface<'a> {
 }
 
 pub fn interfaces(file: PeFile<'_>) -> Vec<Interface<'_>> {
-    // Ensure the PE file exports "CreateInterface".
     if file
         .exports()
         .unwrap()

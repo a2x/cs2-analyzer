@@ -4,17 +4,15 @@ use pelite::Pod;
 
 use super::SchemaFieldType;
 
-#[derive(Clone, Copy)]
+#[derive(Pod)]
 #[repr(C)]
 pub struct SchemaClassFieldData {
-    pub name: Ptr<CStr>,
-    pub schema_type: u8,
-    pad_0009: [u8; 0x7],
-    pub offset: u32,
-    pad_0020: [u8; 0x8],
+    pub name: Ptr<CStr>,                // 0x0000
+    pub schema_type: u8,                // 0x0008
+    pad_0009: [u8; 0x7],                // 0x0009
+    pub single_inheritance_offset: i32, // 0x0010
+    pad_0014: [u8; 0xC],                // 0x0014
 }
-
-unsafe impl Pod for SchemaClassFieldData {}
 
 impl SchemaClassFieldData {
     #[inline]

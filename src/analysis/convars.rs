@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
 
+// TODO: Add other flags.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, TryFromPrimitive)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 #[repr(u32)]

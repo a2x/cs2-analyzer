@@ -12,7 +12,7 @@ use pelite::FileMap;
 pub mod analysis;
 pub mod error;
 
-mod source_engine;
+mod source2;
 
 #[derive(Clone, Debug)]
 pub struct Analyzer {
@@ -111,7 +111,7 @@ impl Analyzer {
         if let Some(data) = self.files.get(file_name) {
             self.analyze_from_bytes(data)
         } else {
-            Err(Error::Other("File not found"))
+            Err(Error::Other("file not found"))
         }
     }
 

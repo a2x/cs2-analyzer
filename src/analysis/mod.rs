@@ -35,7 +35,7 @@ pub struct AnalysisResult<'a> {
 
 #[derive(Clone, Copy, Debug)]
 pub struct AnalyzerOptions {
-    /// Whether to parse buttons.
+    /// Whether to parse key buttons.
     pub buttons: bool,
 
     /// Whether to parse concommands.
@@ -82,7 +82,7 @@ pub fn analyze_with_opts<'a>(
     if opts.buttons {
         result.buttons = match module_name {
             "client.dll" => client::buttons(file),
-            _ => vec![],
+            _ => Vec::new(),
         };
     }
 
@@ -125,7 +125,7 @@ fn read_module_name(file: PeFile<'_>) -> Result<&str> {
         .scanner()
         .finds_code(pattern!("e8${488d05${'}} 488bd0498bcf"), &mut save)
     {
-        return Err(Error::Other("Unable to read module name"));
+        return Err(Error::Other("unable to read module name"));
     }
 
     let name = file.derva_c_str(save[1])?.to_str()?;

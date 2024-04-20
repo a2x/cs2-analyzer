@@ -14,11 +14,7 @@ use serde::{Deserialize, Serialize};
 use super::globals;
 
 use crate::error::{Error, Result};
-
-use crate::source_engine::{
-    SchemaClassFieldData, SchemaClassInfoData, SchemaEnumInfoData, SchemaEnumeratorInfoData,
-    SchemaFieldType, SchemaMetadataEntryData,
-};
+use crate::source2::*;
 
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
@@ -33,7 +29,7 @@ pub struct Class<'a> {
 pub struct ClassField<'a> {
     pub name: &'a str,
     pub schema_type: Option<SchemaFieldType>,
-    pub offset: u32,
+    pub offset: i32,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -48,7 +44,7 @@ pub struct ClassMetadata<'a> {
 pub struct Enum<'a> {
     pub name: &'a str,
     pub type_name: &'a str,
-    pub align_of: u8,
+    pub alignment: u8,
     pub size: u16,
     pub members: Vec<EnumMember<'a>>,
 }
@@ -56,7 +52,7 @@ pub struct Enum<'a> {
 impl<'a> Enum<'a> {
     #[inline]
     pub fn is_valid(&self) -> bool {
-        self.size > 0 && self.align_of >= 1 && self.align_of <= 8
+        self.size > 0 && self.alignment >= 1 && self.alignment <= 8
     }
 }
 
@@ -68,14 +64,11 @@ pub struct EnumMember<'a> {
 }
 
 struct SchemaRegistration<'a> {
-    #[allow(dead_code)]
     type_name: &'a str,
-
     constructor: Rva,
 }
 
 pub fn schemas(file: PeFile<'_>) -> (Vec<Class<'_>>, Vec<Enum<'_>>) {
-    // Ensure the PE file exports "InstallSchemaBindings".
     if file
         .exports()
         .unwrap()
@@ -87,24 +80,24 @@ pub fn schemas(file: PeFile<'_>) -> (Vec<Class<'_>>, Vec<Enum<'_>>) {
         return (Vec::new(), Vec::new());
     }
 
-    let registrations = schema_registrations(file);
+    let regs = schema_registrations(file);
 
-    let mut classes: Vec<_> = registrations
+    let mut classes: Vec<_> = regs
         .par_iter()
-        .flat_map(|registration| process_entries::<SchemaClassInfoData, _, _>(
+        .flat_map(|reg| process_entries::<SchemaClassInfoData, _, _>(
             file,
-            registration,
+            reg,
             pattern!("(4183f803 75? ??? ??? ???${'} ff9018 010000 | 83?03 75? ??? ???${'} ??? ff9018 010000)"),
             read_class,
         ))
         .collect();
 
-    let mut enums: Vec<_> = registrations
+    let mut enums: Vec<_> = regs
         .par_iter()
-        .flat_map(|registration| {
+        .flat_map(|reg| {
             process_entries::<SchemaEnumInfoData, _, _>(
                 file,
-                registration,
+                reg,
                 pattern!("488b? 488d?${'} 4889?2428 4c8d0d${}"),
                 read_enum,
             )
@@ -127,9 +120,9 @@ pub fn schemas(file: PeFile<'_>) -> (Vec<Class<'_>>, Vec<Enum<'_>>) {
 
 fn process_entries<'a, T, F, E>(
     file: PeFile<'a>,
-    registration: &SchemaRegistration<'a>,
+    reg: &SchemaRegistration<'a>,
     pat: &[Atom],
-    process_entry: F,
+    f: F,
 ) -> Vec<E>
 where
     T: Pod,
@@ -139,7 +132,7 @@ where
 
     let mut save = vec![0; save_len(pat)];
 
-    let start_addr = registration.constructor;
+    let start_addr = reg.constructor;
     let end_addr = start_addr + 0x1000;
 
     let mut list = Vec::new();
@@ -148,7 +141,7 @@ where
         if start_addr < save[0] && save[0] < end_addr {
             if let Ok(entries) = table_entries::<T>(file, save[1]) {
                 for entry in entries {
-                    if let Ok(result) = process_entry(file, entry) {
+                    if let Ok(result) = f(file, entry) {
                         list.push(result);
                     }
                 }
@@ -164,8 +157,9 @@ fn read_class(file: PeFile<'_>, ptr: Ptr<SchemaClassInfoData>) -> Result<Class<'
     let name = file.deref_c_str(data.name)?.to_str()?;
 
     let fields = read_class_fields(file, &data)?;
-    let metadata = read_class_metadata(file, data.metadata)?;
+    let metadata = read_class_metadata(file, data.static_metadata)?;
 
+    // TODO: Recursion issue?
     let parent = if !data.base_classes.is_null() {
         let base_class = file.deref(data.base_classes)?;
 
@@ -193,12 +187,10 @@ fn read_class_fields<'a>(
     file: PeFile<'a>,
     data: &SchemaClassInfoData,
 ) -> Result<Vec<ClassField<'a>>> {
-    (0..data.fields_count)
+    (0..data.field_count)
         .into_par_iter()
         .map(|i| {
-            let ptr: Ptr<SchemaClassFieldData> = data
-                .fields
-                .offset((i * mem::size_of::<SchemaClassFieldData>() as u16).into());
+            let ptr = data.fields.at(i as _);
 
             let data = file.deref(ptr)?;
             let name = file.deref_c_str(data.name)?.to_str()?;
@@ -206,7 +198,7 @@ fn read_class_fields<'a>(
             Ok(ClassField {
                 name,
                 schema_type: data.schema_type(),
-                offset: data.offset,
+                offset: data.single_inheritance_offset,
             })
         })
         .collect()
@@ -233,55 +225,46 @@ fn read_enum(file: PeFile<'_>, ptr: Ptr<SchemaEnumInfoData>) -> Result<Enum<'_>>
 
     let members = read_enum_members(file, &data)?;
 
-    let e = Enum {
+    let enum_ = Enum {
         name,
         type_name: data.type_name(),
-        align_of: data.align_of,
-        size: data.size,
+        alignment: data.alignment,
+        size: data.enumerator_count,
         members,
     };
 
-    if !e.is_valid() {
-        return Err(Error::Other("Invalid enum"));
+    if !enum_.is_valid() {
+        return Err(Error::Other("invalid enum"));
     }
 
     info!(
-        "found enum: {} (type: {}) (alignment: {}) (size: {}) (members: {})",
-        e.name,
-        e.type_name,
-        e.align_of,
-        e.size,
-        e.members.len()
+        "found enum: {} (type name: {}) (alignment: {}) (size: {}) (members: {})",
+        enum_.name,
+        enum_.type_name,
+        enum_.alignment,
+        enum_.size,
+        enum_.members.len()
     );
 
-    Ok(e)
+    Ok(enum_)
 }
 
 fn read_enum_members<'a>(
     file: PeFile<'a>,
     data: &SchemaEnumInfoData,
 ) -> Result<Vec<EnumMember<'a>>> {
-    (0..data.size)
+    (0..data.enumerator_count)
         .into_par_iter()
         .map(|i| {
-            let ptr: Ptr<SchemaEnumeratorInfoData> = data
-                .enum_info
-                .offset((i * mem::size_of::<SchemaEnumeratorInfoData>() as u16).into());
+            let ptr = data.enumerators.at(i as _);
 
             let data = file.deref(ptr)?;
             let name = file.deref_c_str(data.name)?.to_str()?;
 
-            let value = {
-                let value = unsafe { data.union_data.ulong } as i64;
-
-                if value == i64::MAX {
-                    -1
-                } else {
-                    value
-                }
-            };
-
-            Ok(EnumMember { name, value })
+            Ok(EnumMember {
+                name,
+                value: unsafe { data.value.ulong } as i64,
+            })
         })
         .collect()
 }
@@ -291,24 +274,21 @@ fn schema_registrations(file: PeFile<'_>) -> Vec<SchemaRegistration<'_>> {
         .par_iter()
         .filter(|instance| instance.type_name.contains("CSchemaRegistration_"))
         .filter_map(|global| {
-            let result = file
-                .derva(global.instance)
+            file.derva(global.instance)
                 .and_then(|va| file.va_to_rva(*va))
                 .map(|constructor| SchemaRegistration {
                     type_name: global.type_name,
                     constructor,
-                });
-
-            if let Ok(registration) = &result {
-                info!(
-                    "found schema registration: {} @ {:#X} (constructor @ {:#X})",
-                    global.type_name, global.instance, registration.constructor
-                );
-            }
-
-            result.ok()
+                })
+                .inspect(|reg| {
+                    info!(
+                        "found schema registration: {} @ {:#X} (constructor @ {:#X})",
+                        global.type_name, global.instance, reg.constructor
+                    );
+                })
+                .ok()
         })
-        .collect::<Vec<_>>()
+        .collect()
 }
 
 fn table_entries<T: Pod>(file: PeFile<'_>, table: Rva) -> Result<Vec<Ptr<T>>> {
