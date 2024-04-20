@@ -1,6 +1,6 @@
 # cs2-analyzer
 
-A Rust crate for analyzing Counter-Strike: 2 binaries from disk and in memory.
+A WIP Rust crate for analyzing Counter-Strike: 2 binaries from disk.
 
 ## Examples
 
