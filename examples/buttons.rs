@@ -1,12 +1,6 @@
 use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 
-use log::info;
-
-use simplelog::{Config, LevelFilter, SimpleLogger};
-
 fn main() -> Result<()> {
-    SimpleLogger::init(LevelFilter::Info, Config::default()).unwrap();
-
     let install_path = find_cs2_install_path()?;
 
     let mut analyzer = Analyzer::new_with_opts(AnalyzerOptions {
@@ -24,7 +18,7 @@ fn main() -> Result<()> {
     let result = analyzer.analyze_file("client.dll")?;
 
     for button in &result.buttons {
-        info!("{:#?}", button);
+        println!("{:#?}", button);
     }
 
     Ok(())

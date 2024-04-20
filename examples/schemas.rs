@@ -1,14 +1,8 @@
 use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 
-use log::info;
-
-use simplelog::{Config, LevelFilter, SimpleLogger};
-
 use walkdir::WalkDir;
 
 fn main() -> Result<()> {
-    SimpleLogger::init(LevelFilter::Info, Config::default()).unwrap();
-
     let install_path = find_cs2_install_path()?;
 
     let dll_paths: Vec<_> = WalkDir::new(&install_path)
@@ -34,11 +28,11 @@ fn main() -> Result<()> {
 
     for (file_name, result) in &result {
         for class in &result.classes {
-            info!("[{}] {:#?}", file_name, class);
+            println!("[{}] {:#?}", file_name, class);
         }
 
-        for e in &result.enums {
-            info!("[{}] {:#?}", file_name, e);
+        for enum_ in &result.enums {
+            println!("[{}] {:#?}", file_name, enum_);
         }
     }
 
