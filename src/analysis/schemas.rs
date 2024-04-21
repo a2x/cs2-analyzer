@@ -64,6 +64,7 @@ pub struct EnumMember<'a> {
 }
 
 struct SchemaRegistration<'a> {
+    #[allow(dead_code)]
     type_name: &'a str,
     constructor: Rva,
 }
