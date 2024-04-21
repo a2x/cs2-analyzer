@@ -1,18 +1,18 @@
 use thiserror::Error;
 
+pub type Result<T> = std::result::Result<T, Error>;
+
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error("I/O error: {0}")]
+    #[error(transparent)]
     Io(#[from] std::io::Error),
 
-    #[error("Pelite error: {0}")]
+    #[error(transparent)]
     Pelite(#[from] pelite::Error),
 
-    #[error("UTF-8 error: {0}")]
+    #[error(transparent)]
     Utf8(#[from] std::str::Utf8Error),
 
     #[error("{0}")]
     Other(&'static str),
 }
-
-pub type Result<T> = std::result::Result<T, Error>;
