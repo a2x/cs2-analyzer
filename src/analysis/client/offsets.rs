@@ -7,7 +7,7 @@ use pelite::pe64::{Pe, PeFile, Rva};
 use phf::phf_map;
 
 static PATTERNS: phf::Map<&'static str, &'static [Atom]> = phf_map! {
-    "dwCSGOInput" => pattern!("4c8b0d${*{'}} 488d045b"),
+    "dwCSGOInput" => pattern!("488905${'} 488d05${} 48890d${} 488905${} 488d05"),
     "dwEntityList" => pattern!("488935${'} 4885f6"),
     "dwGameEntitySystem" => pattern!("488b1d${'} 48891d"),
     "dwGameEntitySystem_getHighestEntityIndex" => pattern!("8b81u2?? 8902 488bc2 c3 cccccccc 48895C24? 48896c24"),
