@@ -7,7 +7,7 @@ use pelite::pe64::{Pe, PeFile, Rva};
 use phf::phf_map;
 
 static PATTERNS: phf::Map<&'static str, &'static [Atom]> = phf_map! {
-    "dwBuildNumber" => pattern!("8905${'} 488d0d${} ff15${} e9"),
+    "dwBuildNumber" => pattern!("8905${'} 488d0d${} ff15${}"),
     "dwNetworkGameClient" => pattern!("48893d${'} 488d15"),
     "dwNetworkGameClient_deltaTick" => pattern!("8983u4 40b7"),
     "dwNetworkGameClient_getLocalPlayer" => pattern!("4883c0u1 488d0440 458b04c7"),
@@ -31,10 +31,9 @@ pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
 
         match *name {
             "dwNetworkGameClient_getLocalPlayer" => {
-                // .text 48 83 C0 0A   add rax, 0Ah
-                // .text 48 8D 04 40   lea rax, [rax+rax*2]
-                // .text 45 8B 04 C7   mov r8d, [r15+rax*8]
-
+                // .text 48 83 C0 0A | add rax, 0Ah
+                // .text 48 8D 04 40 | lea rax, [rax + rax * 2]
+                // .text 45 8B 04 C7 | mov r8d, [r15 + rax * 8]
                 map.insert("dwNetworkGameClient_getLocalPlayer", (rva + (rva * 2)) * 8);
             }
             _ => {
