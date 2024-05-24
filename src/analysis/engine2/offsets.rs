@@ -9,10 +9,14 @@ use phf::phf_map;
 static PATTERNS: phf::Map<&'static str, &'static [Atom]> = phf_map! {
     "dwBuildNumber" => pattern!("8905${'} 488d0d${} ff15${}"),
     "dwNetworkGameClient" => pattern!("48893d${'} 488d15"),
+    "dwNetworkGameClient_clientTickCount" => pattern!("8b81u4 c3 cccccccccccccccccc 8b81${} c3 cccccccccccccccccc 83b9"),
     "dwNetworkGameClient_deltaTick" => pattern!("8983u4 40b7"),
-    "dwNetworkGameClient_getLocalPlayer" => pattern!("4883c0u1 488d0440 458b04c7"),
-    "dwNetworkGameClient_getMaxClients" => pattern!("8b81u2?? c3cccccccccccccccccc 8b81${} ffc0"),
-    "dwNetworkGameClient_signOnState" => pattern!("448b81u2?? 488d0d"),
+    "dwNetworkGameClient_isBackgroundMap" => pattern!("0fb681u4 c3 cccccccccccccccc 0fb681${} c3 cccccccccccccccc 48895c24"),
+    "dwNetworkGameClient_localPlayer" => pattern!("4883c0u1 488d0440 8b0cc1"),
+    "dwNetworkGameClient_maxClients" => pattern!("8b81u4 c3cccccccccccccccccc 8b81${} ffc0"),
+    "dwNetworkGameClient_serverTickCount" => pattern!("8b81u4 c3 cccccccccccccccccc 83b9"),
+    "dwNetworkGameClient_signOnState" => pattern!("448b81u4 488d0d"),
+    "dwSoundService" => pattern!("488905${'} 4c8d4424? 488d05"),
     "dwWindowHeight" => pattern!("8b05${'} 8903"),
     "dwWindowWidth" => pattern!("8b05${'} 8907"),
 };
@@ -27,19 +31,22 @@ pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
             continue;
         }
 
-        let rva = save[1];
+        let mut rva = save[1];
 
         match *name {
-            "dwNetworkGameClient_getLocalPlayer" => {
+            "dwNetworkGameClient_localPlayer" => {
                 // .text 48 83 C0 0A | add rax, 0Ah
                 // .text 48 8D 04 40 | lea rax, [rax + rax * 2]
-                // .text 45 8B 04 C7 | mov r8d, [r15 + rax * 8]
-                map.insert("dwNetworkGameClient_getLocalPlayer", (rva + (rva * 2)) * 8);
+                // .text 8B 0C C1    | mov ecx, [rcx + rax * 8]
+                rva = (rva + (rva * 2)) * 8;
             }
-            _ => {
-                map.insert(*name, rva);
+            "dwSoundService" => {
+                map.insert("dwEngineViewData", rva + 0x9C);
             }
+            _ => {}
         }
+
+        map.insert(*name, rva);
     }
 
     map
