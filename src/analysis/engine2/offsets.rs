@@ -16,7 +16,6 @@ static PATTERNS: phf::Map<&'static str, &'static [Atom]> = phf_map! {
     "dwNetworkGameClient_maxClients" => pattern!("8b81u4 c3cccccccccccccccccc 8b81${} ffc0"),
     "dwNetworkGameClient_serverTickCount" => pattern!("8b81u4 c3 cccccccccccccccccc 83b9"),
     "dwNetworkGameClient_signOnState" => pattern!("448b81u4 488d0d"),
-    "dwSoundService" => pattern!("488905${'} 4c8d4424? 488d05"),
     "dwWindowHeight" => pattern!("8b05${'} 8903"),
     "dwWindowWidth" => pattern!("8b05${'} 8907"),
 };
@@ -33,17 +32,11 @@ pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {
 
         let mut rva = save[1];
 
-        match *name {
-            "dwNetworkGameClient_localPlayer" => {
-                // .text 48 83 C0 0A | add rax, 0Ah
-                // .text 48 8D 04 40 | lea rax, [rax + rax * 2]
-                // .text 8B 0C C1    | mov ecx, [rcx + rax * 8]
-                rva = (rva + (rva * 2)) * 8;
-            }
-            "dwSoundService" => {
-                map.insert("dwEngineViewData", rva + 0x9C);
-            }
-            _ => {}
+        if *name == "dwNetworkGameClient_localPlayer" {
+            // .text 48 83 C0 0A | add rax, 0Ah
+            // .text 48 8D 04 40 | lea rax, [rax + rax * 2]
+            // .text 8B 0C C1    | mov ecx, [rcx + rax * 8]
+            rva = (rva + (rva * 2)) * 8;
         }
 
         map.insert(*name, rva);

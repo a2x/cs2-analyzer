@@ -21,6 +21,7 @@ pub mod input_system;
 pub mod interfaces;
 pub mod matchmaking;
 pub mod schemas;
+pub mod sound_system;
 
 #[derive(Clone, Debug, Default)]
 pub struct AnalysisResult<'a> {
@@ -104,6 +105,7 @@ pub fn analyze_with_opts<'a>(
             "engine2.dll" => engine2::offsets(file),
             "inputsystem.dll" => input_system::offsets(file),
             "matchmaking.dll" => matchmaking::offsets(file),
+            "soundsystem.dll" => sound_system::offsets(file),
             _ => BTreeMap::new(),
         };
     }

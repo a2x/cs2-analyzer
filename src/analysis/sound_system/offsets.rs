@@ -7,8 +7,8 @@ use pelite::pe64::{Pe, PeFile, Rva};
 use phf::phf_map;
 
 static PATTERNS: phf::Map<&'static str, &'static [Atom]> = phf_map! {
-    "dwGameTypes" => pattern!("488d0d${'} 33d2"),
-    "dwGameTypes_mapName" => pattern!("488b81u4 4885c074? 4883c0"),
+    "dwSoundSystem" => pattern!("488d05${'} c3 cccccccccccccccc 488915"),
+    "dwSoundSystem_engineViewData" => pattern!("0f1147u1 0f104b"),
 };
 
 pub fn offsets(file: PeFile<'_>) -> BTreeMap<&'static str, Rva> {

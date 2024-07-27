@@ -1,14 +1,16 @@
 use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 
+use walkdir::WalkDir;
+
 fn main() -> Result<()> {
     let cs2_path = find_cs2_install_path()?;
 
-    let dll_paths = &[
-        format!(r"{}\game\bin\win64\engine2.dll", cs2_path),
-        format!(r"{}\game\bin\win64\inputsystem.dll", cs2_path),
-        format!(r"{}\game\csgo\bin\win64\client.dll", cs2_path),
-        format!(r"{}\game\csgo\bin\win64\matchmaking.dll", cs2_path),
-    ];
+    let dll_paths: Vec<_> = WalkDir::new(&cs2_path)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .filter(|e| e.file_name().to_string_lossy().ends_with(".dll"))
+        .map(|e| e.path().to_path_buf())
+        .collect();
 
     let mut analyzer = Analyzer::new_with_opts(AnalyzerOptions {
         buttons: false,
@@ -19,17 +21,14 @@ fn main() -> Result<()> {
         schemas: false,
     });
 
-    analyzer.add_files(dll_paths);
+    analyzer.add_files(&dll_paths);
 
     // Analyze all added files (This may take a while).
     let result = analyzer.analyze();
 
     for (file_name, result) in &result {
         for (name, value) in &result.offsets {
-            println!(
-                "found offset: {} in {} (value: {:#X})",
-                name, file_name, value
-            );
+            println!("found offset: {} ({} + {:#X})", name, file_name, value);
         }
 
         println!("found {} offsets in {}", result.offsets.len(), file_name);
