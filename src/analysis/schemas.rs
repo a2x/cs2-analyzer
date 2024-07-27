@@ -283,7 +283,7 @@ fn schema_registrations(file: PeFile<'_>) -> Vec<SchemaRegistration<'_>> {
                 })
                 .inspect(|reg| {
                     info!(
-                        "found schema registration: {} @ {:#X} (constructor @ {:#X})",
+                        "found schema registration: {} at {:#X} (constructor @ {:#X})",
                         global.type_name, global.instance, reg.constructor
                     );
                 })

@@ -42,7 +42,7 @@ pub struct ConVar<'a> {
     pub name: &'a str,
     pub description: Option<&'a str>,
     pub flags: ConVarFlags,
-    pub value: Rva,
+    pub rva: Rva,
 }
 
 impl<'a> ConVar<'a> {
@@ -88,7 +88,7 @@ pub fn convars(file: PeFile<'_>) -> Vec<ConVar<'_>> {
     let mut list = Vec::new();
 
     while matches.next(&mut save) {
-        let _ = read(file, &save, &mut list);
+        _ = read(file, &save, &mut list);
     }
 
     if list.is_empty() {
@@ -113,7 +113,7 @@ fn read<'a>(file: PeFile<'a>, save: &[Rva], list: &mut Vec<ConVar<'a>>) -> Resul
         name,
         description,
         flags,
-        value: save[4] + 0x8,
+        rva: save[4] + 0x8,
     });
 
     Ok(())

@@ -12,7 +12,7 @@ use crate::error::Result;
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct Interface<'a> {
     pub name: &'a str,
-    pub value: Rva,
+    pub rva: Rva,
 }
 
 pub fn interfaces(file: PeFile<'_>) -> Vec<Interface<'_>> {
@@ -28,7 +28,7 @@ pub fn interfaces(file: PeFile<'_>) -> Vec<Interface<'_>> {
     }
 
     let mut matches = file.scanner().matches_code(pattern!(
-        "cc 4c8d05${'} 488d15${'} 488d0d${} e9${4c894108} cc"
+        "cc 4c8d05${'} 488d15${488d05${'}} 488d0d${} e9${4c894108} cc"
     ));
 
     let mut save = [0; 3];
@@ -36,7 +36,7 @@ pub fn interfaces(file: PeFile<'_>) -> Vec<Interface<'_>> {
     let mut list = Vec::new();
 
     while matches.next(&mut save) {
-        let _ = read(file, &save, &mut list);
+        _ = read(file, &save, &mut list);
     }
 
     if list.is_empty() {
@@ -50,11 +50,11 @@ pub fn interfaces(file: PeFile<'_>) -> Vec<Interface<'_>> {
 
 fn read<'a>(file: PeFile<'a>, save: &[Rva], list: &mut Vec<Interface<'a>>) -> Result<()> {
     let name = file.derva_c_str(save[1])?.to_str()?;
-    let value = save[2];
+    let rva = save[2];
 
-    info!("found interface: {} @ {:#X}", name, value);
+    info!("found interface: {} at {:#X}", name, rva);
 
-    list.push(Interface { name, value });
+    list.push(Interface { name, rva });
 
     Ok(())
 }

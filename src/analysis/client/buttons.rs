@@ -8,7 +8,7 @@ use crate::error::Result;
 #[derive(Clone, Copy, Debug)]
 pub struct Button<'a> {
     pub name: &'a str,
-    pub value: Rva,
+    pub rva: Rva,
 }
 
 pub fn buttons(file: PeFile<'_>) -> Vec<Button<'_>> {
@@ -21,7 +21,7 @@ pub fn buttons(file: PeFile<'_>) -> Vec<Button<'_>> {
     let mut list = Vec::new();
 
     while matches.next(&mut save) {
-        let _ = read(file, &save, &mut list);
+        _ = read(file, &save, &mut list);
     }
 
     list.dedup_by_key(|k| k.name);
@@ -32,11 +32,11 @@ pub fn buttons(file: PeFile<'_>) -> Vec<Button<'_>> {
 
 fn read<'a>(file: PeFile<'a>, save: &[Rva], list: &mut Vec<Button<'a>>) -> Result<()> {
     let name = file.derva_c_str(save[1])?.to_str()?;
-    let value = save[2] + 0x30 - 0x8;
+    let rva = save[2] + 0x30 - 0x8;
 
-    info!("found button: {} @ {:#X}", name, value);
+    info!("found button: {} at {:#X}", name, rva);
 
-    list.push(Button { name, value });
+    list.push(Button { name, rva });
 
     Ok(())
 }

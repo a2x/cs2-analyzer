@@ -61,7 +61,7 @@ pub fn concommands(file: PeFile<'_>) -> Vec<ConCommand<'_>> {
     let mut list = Vec::new();
 
     while matches.next(&mut save) {
-        let _ = read(file, &save, &mut list);
+        _ = read(file, &save, &mut list);
     }
 
     if list.is_empty() {
