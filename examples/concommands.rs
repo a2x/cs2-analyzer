@@ -3,9 +3,9 @@ use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 use walkdir::WalkDir;
 
 fn main() -> Result<()> {
-    let install_path = find_cs2_install_path()?;
+    let cs2_path = find_cs2_install_path()?;
 
-    let dll_paths: Vec<_> = WalkDir::new(&install_path)
+    let dll_paths: Vec<_> = WalkDir::new(&cs2_path)
         .into_iter()
         .filter_map(|e| e.ok())
         .filter(|e| e.file_name().to_string_lossy().ends_with(".dll"))
@@ -23,13 +23,22 @@ fn main() -> Result<()> {
 
     analyzer.add_files(&dll_paths);
 
-    // Analyze all the files (This may take a while).
+    // Analyze all added files (This may take a while).
     let result = analyzer.analyze();
 
     for (file_name, result) in &result {
         for concommand in &result.concommands {
-            println!("[{}] {:#?}", file_name, concommand);
+            println!(
+                "found concommand: {} in {} (flags: {:?}, description: {:?})",
+                concommand.name, file_name, concommand.flags, concommand.description
+            );
         }
+
+        println!(
+            "found {} concommands in {}",
+            result.concommands.len(),
+            file_name
+        );
     }
 
     Ok(())

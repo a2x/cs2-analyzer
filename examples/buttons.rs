@@ -1,7 +1,7 @@
 use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 
 fn main() -> Result<()> {
-    let install_path = find_cs2_install_path()?;
+    let cs2_path = find_cs2_install_path()?;
 
     let mut analyzer = Analyzer::new_with_opts(AnalyzerOptions {
         buttons: true,
@@ -12,13 +12,15 @@ fn main() -> Result<()> {
         schemas: false,
     });
 
-    analyzer.add_file(format!(r"{}\game\csgo\bin\win64\client.dll", install_path));
+    analyzer.add_file(format!(r"{}\game\csgo\bin\win64\client.dll", cs2_path));
 
-    // Analyze the file.
     let result = analyzer.analyze_file("client.dll")?;
 
     for button in &result.buttons {
-        println!("{:#?}", button);
+        println!(
+            "found button: {} (client.dll + {:#X})",
+            button.name, button.rva
+        );
     }
 
     Ok(())

@@ -3,9 +3,9 @@ use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 use walkdir::WalkDir;
 
 fn main() -> Result<()> {
-    let install_path = find_cs2_install_path()?;
+    let cs2_path = find_cs2_install_path()?;
 
-    let dll_paths: Vec<_> = WalkDir::new(&install_path)
+    let dll_paths: Vec<_> = WalkDir::new(&cs2_path)
         .into_iter()
         .filter_map(|e| e.ok())
         .filter(|e| e.file_name().to_string_lossy().ends_with(".dll"))
@@ -23,17 +23,37 @@ fn main() -> Result<()> {
 
     analyzer.add_files(&dll_paths);
 
-    // Analyze all the files (This may take a while).
+    // Analyze all added files (This may take a while).
     let result = analyzer.analyze();
 
     for (file_name, result) in &result {
         for class in &result.classes {
-            println!("[{}] {:#?}", file_name, class);
+            println!(
+                "found class: {} in {} (field count: {}, parent name: {:?})",
+                class.name,
+                file_name,
+                class.fields.len(),
+                class.parent.as_ref().map(|p| p.name)
+            );
         }
 
         for enum_ in &result.enums {
-            println!("[{}] {:#?}", file_name, enum_);
+            println!(
+                "found enum: {} in {} (member count: {}, alignment: {}, type name: {})",
+                enum_.name,
+                file_name,
+                enum_.members.len(),
+                enum_.alignment,
+                enum_.type_name
+            );
         }
+
+        println!(
+            "found {} classes and {} enums in {}",
+            result.classes.len(),
+            result.enums.len(),
+            file_name
+        );
     }
 
     Ok(())

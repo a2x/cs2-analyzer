@@ -1,13 +1,13 @@
 use cs2_analyzer::{Analyzer, AnalyzerOptions, Result};
 
 fn main() -> Result<()> {
-    let install_path = find_cs2_install_path()?;
+    let cs2_path = find_cs2_install_path()?;
 
     let dll_paths = &[
-        format!(r"{}\game\bin\win64\engine2.dll", install_path),
-        format!(r"{}\game\bin\win64\inputsystem.dll", install_path),
-        format!(r"{}\game\csgo\bin\win64\client.dll", install_path),
-        format!(r"{}\game\csgo\bin\win64\matchmaking.dll", install_path),
+        format!(r"{}\game\bin\win64\engine2.dll", cs2_path),
+        format!(r"{}\game\bin\win64\inputsystem.dll", cs2_path),
+        format!(r"{}\game\csgo\bin\win64\client.dll", cs2_path),
+        format!(r"{}\game\csgo\bin\win64\matchmaking.dll", cs2_path),
     ];
 
     let mut analyzer = Analyzer::new_with_opts(AnalyzerOptions {
@@ -21,13 +21,18 @@ fn main() -> Result<()> {
 
     analyzer.add_files(dll_paths);
 
-    // Analyze all the files (This may take a while).
+    // Analyze all added files (This may take a while).
     let result = analyzer.analyze();
 
     for (file_name, result) in &result {
         for (name, value) in &result.offsets {
-            println!("[{}] {} @ {:#X}", file_name, name, value);
+            println!(
+                "found offset: {} in {} (value: {:#X})",
+                name, file_name, value
+            );
         }
+
+        println!("found {} offsets in {}", result.offsets.len(), file_name);
     }
 
     Ok(())
