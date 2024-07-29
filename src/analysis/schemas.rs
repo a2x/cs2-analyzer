@@ -1,4 +1,5 @@
 use std::mem;
+use std::ops::Not;
 
 use log::{info, warn};
 
@@ -22,6 +23,7 @@ pub struct Class<'a> {
     pub name: &'a str,
     pub parent: Option<Box<Class<'a>>>,
     pub fields: Vec<ClassField<'a>>,
+    pub metadata: Option<ClassMetadata<'a>>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -88,7 +90,7 @@ pub fn schemas(file: PeFile<'_>) -> (Vec<Class<'_>>, Vec<Enum<'_>>) {
         .flat_map(|reg| process_entries::<SchemaClassInfoData, _, _>(
             file,
             reg,
-            pattern!("(4183f803 75? ??? ??? ???${'} ff9018 010000 | 83?03 75? ??? ???${'} ??? ff9018 010000)"),
+            pattern!("(41??? | 83??) 7513 488b? (498bca 488d15${'} | 488d15${'}) (488b? ff90${} | ff90${})"),
             read_class,
         ))
         .collect();
@@ -123,7 +125,7 @@ fn process_entries<'a, T, F, E>(
     file: PeFile<'a>,
     reg: &SchemaRegistration<'a>,
     pat: &[Atom],
-    f: F,
+    callback: F,
 ) -> Vec<E>
 where
     T: Pod,
@@ -141,8 +143,8 @@ where
     while matches.next(&mut save) {
         if start_addr < save[0] && save[0] < end_addr {
             if let Ok(entries) = table_entries::<T>(file, save[1]) {
-                for entry in entries {
-                    if let Ok(result) = f(file, entry) {
+                for entry in &entries {
+                    if let Ok(result) = callback(file, *entry) {
                         list.push(result);
                     }
                 }
@@ -158,29 +160,37 @@ fn read_class(file: PeFile<'_>, ptr: Ptr<SchemaClassInfoData>) -> Result<Class<'
     let name = file.deref_c_str(data.name)?.to_str()?;
 
     let fields = read_class_fields(file, &data)?;
-    let metadata = read_class_metadata(file, data.static_metadata)?;
 
-    // TODO: Recursion issue?
-    let parent = if !data.base_classes.is_null() {
-        let base_class = file.deref(data.base_classes)?;
+    let metadata = data
+        .static_metadata
+        .is_null()
+        .not()
+        .then(|| read_class_metadata(file, data.static_metadata))
+        .transpose()?;
 
-        Some(Box::new(read_class(file, base_class.prev)?))
-    } else {
-        None
-    };
+    let parent = data
+        .base_classes
+        .is_null()
+        .not()
+        .then(|| {
+            let base_class = file.deref(data.base_classes)?;
+
+            read_class(file, base_class.prev).map(Box::new)
+        })
+        .transpose()?;
 
     info!(
-        "found class: {} (parent: {:?}) (fields: {}) (metadata: {:?})",
+        "found class: {} (field count: {}, parent name: {:?})",
         name,
-        parent.as_ref().map(|p| p.name),
         fields.len(),
-        metadata
+        parent.as_ref().map(|p| p.name)
     );
 
     Ok(Class {
         name,
         parent,
         fields,
+        metadata,
     })
 }
 
@@ -239,12 +249,11 @@ fn read_enum(file: PeFile<'_>, ptr: Ptr<SchemaEnumInfoData>) -> Result<Enum<'_>>
     }
 
     info!(
-        "found enum: {} (type name: {}) (alignment: {}) (size: {}) (members: {})",
+        "found enum: {} (member count: {}, alignment: {}, type name: {})",
         enum_.name,
-        enum_.type_name,
+        enum_.members.len(),
         enum_.alignment,
-        enum_.size,
-        enum_.members.len()
+        enum_.type_name
     );
 
     Ok(enum_)
@@ -283,7 +292,7 @@ fn schema_registrations(file: PeFile<'_>) -> Vec<SchemaRegistration<'_>> {
                 })
                 .inspect(|reg| {
                     info!(
-                        "found schema registration: {} at {:#X} (constructor @ {:#X})",
+                        "found schema registration: {} at {:#X} (constructor: {:#X})",
                         global.type_name, global.instance, reg.constructor
                     );
                 })
