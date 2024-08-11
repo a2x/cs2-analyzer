@@ -8,13 +8,26 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/slate/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-  <link data-trunk rel="scss" href="index.scss" />
+  <link rel="stylesheet" href="/cs2-analyzer/index-436b50d74f802b1c.css" integrity="sha384&#x2D;OC3s9dDZbWPJ&#x2F;yhyN5cZtwnNgDzI&#x2B;YhFB3kk4OmVaE9PqV0d6COnAE4Z8cJxrviq"/>
 
   <title>cs2-analyzer - WASM Demo</title>
-</head>
+
+<link rel="modulepreload" href="/cs2-analyzer/cs2-analyzer-wasm-5b7cb821083101e0.js" crossorigin=anonymous integrity="sha384-B2oL67Khmons6FS7MZr4T/bYYPuDxjzcqYz4qis/HXPJPODwLbMyeQii5GgiFiMn">
+<link rel="preload" href="/cs2-analyzer/cs2-analyzer-wasm-5b7cb821083101e0_bg.wasm" crossorigin=anonymous integrity="sha384-GZW6QK1JICoojs8n49n1j/H2HrFxnT3vJ68f41TNO3FfSerf96yP/E4bt2QEDVvP" as="fetch" type="application/wasm"></head>
 
 <body>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+
+<script type="module" nonce="cg/EZQtYhyEiIBEDfqCxKw==">
+import init, * as bindings from '/cs2-analyzer/cs2-analyzer-wasm-5b7cb821083101e0.js';
+const wasm = await init('/cs2-analyzer/cs2-analyzer-wasm-5b7cb821083101e0_bg.wasm');
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+
+</script></body>
 
 </html>
