@@ -23,7 +23,7 @@ pub mod matchmaking;
 pub mod schemas;
 pub mod sound_system;
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct AnalysisResult<'a> {
     pub buttons: Vec<Button<'a>>,
     pub concommands: Vec<ConCommand<'a>>,
@@ -34,7 +34,7 @@ pub struct AnalysisResult<'a> {
     pub enums: Vec<Enum<'a>>,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct AnalyzerOptions {
     /// Whether to parse key buttons.
     pub buttons: bool,

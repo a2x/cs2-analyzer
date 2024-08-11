@@ -14,7 +14,7 @@ pub mod error;
 
 mod source2;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Analyzer {
     files: HashMap<String, Vec<u8>>,
     options: AnalyzerOptions,

@@ -17,7 +17,7 @@ use super::globals;
 use crate::error::{Error, Result};
 use crate::source2::*;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct Class<'a> {
     pub name: &'a str,
@@ -26,22 +26,22 @@ pub struct Class<'a> {
     pub metadata: Option<ClassMetadata<'a>>,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct ClassField<'a> {
     pub name: &'a str,
-    pub schema_type: Option<SchemaFieldType>,
+    pub type_: Option<SchemaFieldType>,
     pub offset: i32,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct ClassMetadata<'a> {
     pub name: &'a str,
     pub function: Rva,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct Enum<'a> {
     pub name: &'a str,
@@ -58,7 +58,7 @@ impl<'a> Enum<'a> {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct EnumMember<'a> {
     pub name: &'a str,
@@ -208,7 +208,7 @@ fn read_class_fields<'a>(
 
             Ok(ClassField {
                 name,
-                schema_type: data.schema_type(),
+                type_: data.schema_type(),
                 offset: data.single_inheritance_offset,
             })
         })

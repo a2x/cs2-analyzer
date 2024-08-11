@@ -36,7 +36,7 @@ pub enum ConVarFlags {
     VConsoleSetFocus = 0x8000000,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct ConVar<'a> {
     pub name: &'a str,

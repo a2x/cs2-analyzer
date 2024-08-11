@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[cfg_attr(feature = "serde_support", derive(Deserialize, Serialize))]
 pub struct Interface<'a> {
     pub name: &'a str,

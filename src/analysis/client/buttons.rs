@@ -5,7 +5,7 @@ use pelite::pe64::{Pe, PeFile, Rva};
 
 use crate::error::Result;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Button<'a> {
     pub name: &'a str,
     pub rva: Rva,

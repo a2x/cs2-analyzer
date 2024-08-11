@@ -1,0 +1,38 @@
+name: Deploy to GitHub Pages
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: wasm32-unknown-unknown
+
+    - name: Install Trunk
+      uses: jetli/trunk-action@v0.5.0
+      with:
+        version: 'latest'
+
+    - name: Build
+      run: |
+        cd wasm
+        trunk build --release
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./wasm/dist

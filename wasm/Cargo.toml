@@ -1,0 +1,18 @@
+[package]
+name = "cs2-analyzer-wasm"
+version = "0.1.0"
+authors = ["a2x"]
+edition = "2021"
+readme = "../README.md"
+repository = "https://github.com/a2x/cs2-analyzer"
+license = "MIT"
+
+[dependencies]
+cs2-analyzer = { path = ".." }
+gloo = "0.11"
+js-sys = "0.3"
+yew = { version = "0.21", features = ["csr"] }
+
+[dependencies.web-sys]
+version = "0.3"
+features = ["DataTransfer", "DragEvent", "File"]

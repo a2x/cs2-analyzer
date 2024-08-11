@@ -1,0 +1,11 @@
+[build]
+target = "index.html"
+dist = "dist"
+release = false
+public_url = "/cs2-analyzer/"
+
+[watch]
+watch = ["./index.html", "src/"]
+
+[clean]
+dist = "dist"

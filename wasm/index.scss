@@ -1,0 +1,13 @@
+.file-upload-zone {
+  border: 2px dashed #CCC;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 2rem;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.file-upload-zone:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
