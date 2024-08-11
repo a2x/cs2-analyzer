@@ -7,10 +7,10 @@ use pelite::pe64::{Pe, PeFile, Rva};
 use phf::phf_map;
 
 static PATTERNS: phf::Map<&'static str, &'static [Atom]> = phf_map! {
-    "dwBuildNumber" => pattern!("8905${'} 488d0d${} ff15${}"),
+    "dwBuildNumber" => pattern!("8905${'} 488d0d${} ff15${} 488b0d"),
     "dwNetworkGameClient" => pattern!("48893d${'} 488d15"),
     "dwNetworkGameClient_clientTickCount" => pattern!("8b81u4 c3 cccccccccccccccccc 8b81${} c3 cccccccccccccccccc 83b9"),
-    "dwNetworkGameClient_deltaTick" => pattern!("8983u4 40b7"),
+    "dwNetworkGameClient_deltaTick" => pattern!("8983u4 8b41"),
     "dwNetworkGameClient_isBackgroundMap" => pattern!("0fb681u4 c3 cccccccccccccccc 0fb681${} c3 cccccccccccccccc 48895c24"),
     "dwNetworkGameClient_localPlayer" => pattern!("4883c0u1 488d0440 8b0cc1"),
     "dwNetworkGameClient_maxClients" => pattern!("8b81u4 c3cccccccccccccccccc 8b81${} ffc0"),
