@@ -1,8 +1,8 @@
 # cs2-analyzer
 
-A Rust crate for analyzing Counter-Strike: 2 binaries from disk and in memory.
+A Rust crate for "analyzing" Counter-Strike: 2 binaries from disk and ones already loaded in memory.
 
-Web Demo: https://a2x.github.io/cs2-analyzer
+Web demo: https://a2x.github.io/cs2-analyzer
 
 ## Examples
 
