@@ -8,19 +8,17 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/slate/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-  <link rel="stylesheet" href="/cs2-analyzer/index-436b50d74f802b1c.css" integrity="sha384&#x2D;OC3s9dDZbWPJ&#x2F;yhyN5cZtwnNgDzI&#x2B;YhFB3kk4OmVaE9PqV0d6COnAE4Z8cJxrviq"/>
+  <link rel="stylesheet" href="/cs2-analyzer/index-436b50d74f802b1c.css" integrity="sha384-OC3s9dDZbWPJ/yhyN5cZtwnNgDzI+YhFB3kk4OmVaE9PqV0d6COnAE4Z8cJxrviq"/>
 
   <title>cs2-analyzer - WASM Demo</title>
-
-<link rel="modulepreload" href="/cs2-analyzer/cs2-analyzer-wasm-5074e0646246ebc0.js" crossorigin=anonymous integrity="sha384-fCRn0Zhq4bf7kffszVB7grWfEu4fOWiyOhMQC7mzH4VwhXf5VJqANvCSkVXgPOck">
-<link rel="preload" href="/cs2-analyzer/cs2-analyzer-wasm-5074e0646246ebc0_bg.wasm" crossorigin=anonymous integrity="sha384-EfWtMQSMbE672BPBDssT4xcRoonXUEoUed7xhZ2DP/AGukrWBaWzpub48kLboRlq" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="/cs2-analyzer/cs2-analyzer-wasm-596c830dec92d675.js" crossorigin="anonymous" integrity="sha384-eg/xwdRLK5W5LK+zcHbY5aDAaZEAcXCI5kxoSE9lG9gQZyfn9qulIFNrdKeXWQor"><link rel="preload" href="/cs2-analyzer/cs2-analyzer-wasm-596c830dec92d675_bg.wasm" crossorigin="anonymous" integrity="sha384-t6M2yAOqrVPFD55cX6daDBuLoGJcSANSFAICphxh+A2xjsdfyNoLAvM0gCUUHilC" as="fetch" type="application/wasm"></head>
 
 <body>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script type="module" nonce="tzvjoaBFMBPXn3+vBIdNLw==">
-import init, * as bindings from '/cs2-analyzer/cs2-analyzer-wasm-5074e0646246ebc0.js';
-const wasm = await init('/cs2-analyzer/cs2-analyzer-wasm-5074e0646246ebc0_bg.wasm');
+<script type="module">
+import init, * as bindings from '/cs2-analyzer/cs2-analyzer-wasm-596c830dec92d675.js';
+const wasm = await init({ module_or_path: '/cs2-analyzer/cs2-analyzer-wasm-596c830dec92d675_bg.wasm' });
 
 
 window.wasmBindings = bindings;
